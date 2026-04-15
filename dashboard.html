@@ -1159,8 +1159,9 @@ function showAuth() {
 async function loadStats() {
   const monthStart = new Date();
   monthStart.setDate(1); monthStart.setHours(0,0,0,0);
-  const { data } = await sb.from('vat_validations').select('final_status')
+  const { data, error } = await sb.from('vat_validations').select('final_status')
     .eq('shop_id', currentUser.id).gte('created_at', monthStart.toISOString());
+  if (error) { console.error('loadStats error:', error); return; }
   if (!data) return;
   animateCount('stat-total',   data.length);
   animateCount('stat-valid',   data.filter(r => r.final_status === 'valid').length);
@@ -1277,6 +1278,7 @@ async function loadHistory() {
     .range(historyPage*PAGE_SIZE,(historyPage+1)*PAGE_SIZE-1);
   if (historyFilter !== 'all') q = q.eq('final_status', historyFilter);
   const { data, count, error } = await q;
+  if (error) { console.error('loadHistory error:', error); }
   if (error || !data) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty-table">Erreur de chargement.</td></tr>'; return;
   }
