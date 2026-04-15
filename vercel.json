@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/dashboard", "dest": "/dashboard.html" }
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/dashboard.html" }
   ]
 }
