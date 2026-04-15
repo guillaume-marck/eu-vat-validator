@@ -1032,7 +1032,8 @@ tbody tr:hover td:first-child { border-left-color: var(--primary); }
      SCRIPT — identique, aucune logique modifiée
 ═══════════════════════════════════════════════════════ -->
 <script>
-const SUPABASE_URL  = 'https://uuteakaaawjjjcslemqo.supabase.co';
+const SUPABASE_DIRECT = 'https://uuteakaaawjjjcslemqo.supabase.co';
+const SUPABASE_URL  = window.location.protocol === 'file:' ? SUPABASE_DIRECT : (window.location.origin + '/supabase-proxy');
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1dGVha2FhYXdqampjc2xlbXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MzkyNTUsImV4cCI6MjA5MTUxNTI1NX0.OfIfgLJT8p3hNiUq-lOFhNsHCjhj_0UMFczQAg2A-FQ';
 const N8N_WEBHOOK   = 'https://n8n.srv1199028.hstgr.cloud/webhook/eu-vat-validator';
 const QUOTAS = { starter: 300, pro: Infinity, agency: Infinity };

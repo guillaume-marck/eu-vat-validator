@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/supabase-proxy/:path*", "destination": "https://uuteakaaawjjjcslemqo.supabase.co/:path*" },
     { "source": "/dashboard", "destination": "/dashboard.html" }
   ]
 }
