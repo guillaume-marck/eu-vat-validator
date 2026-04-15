@@ -1037,15 +1037,15 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const N8N_WEBHOOK   = 'https://n8n.srv1199028.hstgr.cloud/webhook/eu-vat-validator';
 const QUOTAS = { starter: 300, pro: Infinity, agency: Infinity };
 
-// Proxy toutes les requêtes Supabase via Vercel (same-origin) pour éviter le blocage tracking prevention
-const SUPABASE_PROXY = window.location.protocol !== 'file:' ? window.location.origin + '/supabase-proxy' : null;
-const customFetch = SUPABASE_PROXY
-  ? (url, options) => fetch(url.replace(SUPABASE_URL, SUPABASE_PROXY), options)
-  : undefined;
+// Utilise le proxy Vercel comme URL cliente (same-origin = pas de blocage tracking)
+// storageKey fixe pour que la session persiste même si l'URL change
+const SUPABASE_CLIENT_URL = window.location.protocol !== 'file:'
+  ? window.location.origin + '/supabase-proxy'
+  : SUPABASE_URL;
 
 const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
-  global: { fetch: customFetch }
+const sb = createClient(SUPABASE_CLIENT_URL, SUPABASE_ANON, {
+  auth: { storageKey: 'vat-validator-auth-v1' }
 });
 
 let currentUser    = null;
