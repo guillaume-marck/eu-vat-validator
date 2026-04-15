@@ -1082,23 +1082,19 @@ async function doLogin(e) {
   e.preventDefault(); clearAlert();
   const btn = document.getElementById('login-btn');
   setBtnLoading(btn, 'Connexion…');
-  console.log('[LOGIN] Début connexion, sb:', typeof sb, 'sb.auth:', typeof sb?.auth);
   try {
-    console.log('[LOGIN] Appel signInWithPassword...');
     const result = await Promise.race([
       sb.auth.signInWithPassword({
         email:    document.getElementById('login-email').value.trim(),
         password: document.getElementById('login-pwd').value,
       }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT 10s')), 10000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Connexion impossible. Essayez avec Chrome, Firefox ou Safari.')), 10000))
     ]);
-    console.log('[LOGIN] Résultat:', result);
     if (result.error) showAlert(result.error.message);
   } catch (err) {
-    showAlert('Erreur : ' + err.message);
-    console.error('[LOGIN] Erreur:', err);
+    showAlert(err.message);
+    console.error('doLogin error:', err);
   } finally {
-    console.log('[LOGIN] Finally — setBtnReady');
     setBtnReady(btn, 'Se connecter');
   }
 }
