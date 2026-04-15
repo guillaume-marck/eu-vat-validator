@@ -33,8 +33,10 @@ export async function onRequest(context) {
   const response = await fetch(targetUrl, init);
   const body = await response.text();
 
-  const resHeaders = new Headers(response.headers);
+  const resHeaders = new Headers();
   resHeaders.set('Access-Control-Allow-Origin', '*');
+  resHeaders.set('Content-Type', response.headers.get('Content-Type') || 'application/json');
+  if (body) resHeaders.set('Content-Length', new TextEncoder().encode(body).length.toString());
 
   return new Response(body || null, {
     status: response.status,
