@@ -1082,12 +1082,18 @@ async function doLogin(e) {
   e.preventDefault(); clearAlert();
   const btn = document.getElementById('login-btn');
   setBtnLoading(btn, 'Connexion…');
-  const { error } = await sb.auth.signInWithPassword({
-    email:    document.getElementById('login-email').value.trim(),
-    password: document.getElementById('login-pwd').value,
-  });
-  setBtnReady(btn, 'Se connecter');
-  if (error) showAlert(error.message);
+  try {
+    const { error } = await sb.auth.signInWithPassword({
+      email:    document.getElementById('login-email').value.trim(),
+      password: document.getElementById('login-pwd').value,
+    });
+    if (error) showAlert(error.message);
+  } catch (err) {
+    showAlert('Erreur de connexion. Réessayez.');
+    console.error('doLogin error:', err);
+  } finally {
+    setBtnReady(btn, 'Se connecter');
+  }
 }
 
 async function doRegister(e) {
@@ -1097,13 +1103,19 @@ async function doRegister(e) {
   if (pwd !== pwd2) { showAlert('Les mots de passe ne correspondent pas.'); return; }
   const btn = document.getElementById('reg-btn');
   setBtnLoading(btn, 'Création…');
-  const { error } = await sb.auth.signUp({
-    email:    document.getElementById('reg-email').value.trim(),
-    password: pwd,
-  });
-  setBtnReady(btn, 'Créer mon compte');
-  if (error) showAlert(error.message);
-  else       showAlert('Compte créé ! Vérifiez votre email pour confirmer.', 'success');
+  try {
+    const { error } = await sb.auth.signUp({
+      email:    document.getElementById('reg-email').value.trim(),
+      password: pwd,
+    });
+    if (error) showAlert(error.message);
+    else       showAlert('Compte créé ! Vérifiez votre email pour confirmer.', 'success');
+  } catch (err) {
+    showAlert('Erreur lors de la création du compte. Réessayez.');
+    console.error('doRegister error:', err);
+  } finally {
+    setBtnReady(btn, 'Créer mon compte');
+  }
 }
 
 async function doLogout() { await sb.auth.signOut(); }
@@ -1160,7 +1172,7 @@ async function loadStats() {
   const monthStart = new Date();
   monthStart.setDate(1); monthStart.setHours(0,0,0,0);
   const { data, error } = await sb.from('vat_validations').select('final_status')
-    .eq('shop_id', currentUser.id).gte('created_at', monthStart.toISOString());
+    .eq('shop_id', String(currentUser.id)).gte('created_at', monthStart.toISOString());
   if (error) { console.error('loadStats error:', error); return; }
   if (!data) return;
   animateCount('stat-total',   data.length);
@@ -1273,7 +1285,7 @@ async function loadHistory() {
   const tbody = document.getElementById('history-body');
   tbody.innerHTML = '<tr><td colspan="6" class="empty-table">Chargement…</td></tr>';
   let q = sb.from('vat_validations').select('*',{count:'exact'})
-    .eq('shop_id', currentUser.id)
+    .eq('shop_id', String(currentUser.id))
     .order('created_at',{ascending:false})
     .range(historyPage*PAGE_SIZE,(historyPage+1)*PAGE_SIZE-1);
   if (historyFilter !== 'all') q = q.eq('final_status', historyFilter);
@@ -1329,7 +1341,7 @@ function changePage(dir) {
 }
 
 async function exportCSV() {
-  let q = sb.from('vat_validations').select('*').eq('shop_id', currentUser.id).order('created_at',{ascending:false});
+  let q = sb.from('vat_validations').select('*').eq('shop_id', String(currentUser.id)).order('created_at',{ascending:false});
   if (historyFilter !== 'all') q = q.eq('final_status', historyFilter);
   const { data } = await q;
   if (!data||!data.length) { toast('Aucune donnée à exporter.','info'); return; }
