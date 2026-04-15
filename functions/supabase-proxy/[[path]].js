@@ -27,16 +27,16 @@ export async function onRequest(context) {
 
   const init = { method: request.method, headers };
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    init.body = request.body;
-    init.duplex = 'half';
+    init.body = await request.text();
   }
 
   const response = await fetch(targetUrl, init);
+  const body = await response.text();
 
   const resHeaders = new Headers(response.headers);
   resHeaders.set('Access-Control-Allow-Origin', '*');
 
-  return new Response(response.body, {
+  return new Response(body || null, {
     status: response.status,
     headers: resHeaders,
   });
